@@ -84,6 +84,19 @@ int main(int argc, char *argv[])
     memcpy(&req.arp_tpa,&target_ip_addr.s_addr,sizeof(req.arp_tpa));
     memcpy(&req.arp_spa,&sender_ip_addr.s_addr,sizeof(req.arp_spa));
 
+    /* 
+    You will also need to set source_ip_addr and source_hw_addr to contain the IP
+    and MAC addresses of the interface from which the request will be sent (in network
+    byte order).
+    See the microHOWTOs
+    Get the IP address of a network interface in C using SIOCGIFADDR
+    http://www.microhowto.info/howto/get_the_ip_address_of_a_network_interface_in_c_using_siocgifaddr.html
+    and
+    Get the MAC address of an Ethernet interface in C using SIOCGIFHWADDR
+    http://www.microhowto.info/howto/get_the_mac_address_of_an_ethernet_interface_in_c_using_siocgifhwaddr.html
+    for details of how to obtain these given the interface name.
+    */
+
     /* Send the frame (using sendto) */
 
     if (sendto(fd,&req,sizeof(req),0,(struct sockaddr*)&addr,sizeof(addr))==-1) {
