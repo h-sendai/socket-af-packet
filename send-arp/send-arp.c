@@ -24,6 +24,15 @@
 
 int main(int argc, char *argv[])
 {
+    if (argc != 4) {
+        fprintf(stderr, "Usage: send-arp if_name sender_ip_address target_ip_address\n");
+        fprintf(stderr, "example: ./send-arp eth0 192.168.10.99 192.168.10.10\n");
+        exit(1);
+    }
+
+    char *if_name          = argv[1];
+    char *sender_ip_string = argv[2];
+    char *target_ip_string = argv[3];
 
     /* Create the AF_PACKET socket */
     int fd = socket(AF_PACKET, SOCK_DGRAM, htons(ETH_P_ARP));
@@ -33,7 +42,6 @@ int main(int argc, char *argv[])
 
     /* Determine the index number of the Ethernet interface to be used */
     struct ifreq ifr;
-    char *if_name = "enp0s3";
     size_t if_name_len=strlen(if_name);
     if (if_name_len<sizeof(ifr.ifr_name)) {
         memcpy(ifr.ifr_name,if_name,if_name_len);
@@ -65,9 +73,6 @@ int main(int argc, char *argv[])
     req.arp_op=htons(ARPOP_REQUEST);
     memset(&req.arp_tha,0,sizeof(req.arp_tha));
 
-    // const char* target_ip_string="192.168.56.1";
-    const char* target_ip_string="10.0.2.2";
-    const char* sender_ip_string="10.0.2.15";
     struct in_addr target_ip_addr={0};
     struct in_addr sender_ip_addr={0};
     if (!inet_aton(target_ip_string,&target_ip_addr)) {
