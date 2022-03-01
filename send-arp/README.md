@@ -1,3 +1,27 @@
+## ARP フォーマット
+
+TCP/Illusrated Vol. 1 (1st edition)
+4.4 ARP Packet Format (p. 56)
+
+Ethernet destination addr (6)
+Ethernet source addr      (6)
+Ethernet frame type       (2) ARP request, ARP reply: 0x0806
+Hardware type             (2) Ethernet: 0x0001
+Protocol type             (2) IP Address: 0x0800
+Hardware size             (1) Ethernet:   0x06
+Protocol size             (1) IP Address: 0x04
+op                        (2) ARP request: 1, ARP reply: 2. RARP request: 3, RARP reply: 4
+Sender Hardware address   (6)
+Sender IP address         (4)
+Target Hardware address   (6)
+Target IP address         (4)
+
+ARP requestではSender Hardware addressはEthernetヘッダと
+ARP requestの両方に含まれることになる。
+
+ARP requestはtarget hardware address以外の全ての
+フィールドを埋めて送ることになる。
+
 ## ARP request送信、ARP reply受信側でのtcpdump
 
 Ethernetペイロードの最小値は46バイト。
