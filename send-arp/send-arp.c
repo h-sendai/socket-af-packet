@@ -99,9 +99,11 @@ int main(int argc, char *argv[])
 
     /* Send the frame (using sendto) */
 
-    if (sendto(fd,&req,sizeof(req),0,(struct sockaddr*)&addr,sizeof(addr))==-1) {
+    int n = sendto(fd,&req,sizeof(req),0,(struct sockaddr*)&addr,sizeof(addr));
+    if (n < 0) {
         err(1, "sendto");
     }
+    printf("sendto return value: %d\n", n); 
 
     return 0;
 }
