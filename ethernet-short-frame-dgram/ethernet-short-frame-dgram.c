@@ -21,46 +21,6 @@
 #include <time.h>
 #include <unistd.h>
 
-int send_packet(int sockfd, char *if_name)
-{
-    /* 3. Determine the index number of the Ethernet interface to be used. */
-    unsigned int if_index;
-    if ( (if_index = if_nametoindex(if_name)) == 0) {
-        warn("if_nametoindex");
-        return -1;
-    }
-    
-    /* 4. Construct the destination address */
-    // unsigned char ether_pause_addr[] = { 0x01, 0x80, 0xc2, 0x00, 0x00, 0x01 };
-    struct sockaddr_ll addr;
-    memset(&addr, 0, sizeof(addr));
-
-    addr.sll_family   = AF_PACKET;
-    addr.sll_ifindex  = if_index;
-    addr.sll_halen    = ETHER_ADDR_LEN;
-    //addr.sll_protocol = htons(ETH_P_ALL);
-    addr.sll_protocol = htons(0xfeed);
-    addr.sll_addr[0]  = 0xff;
-    addr.sll_addr[1]  = 0xff;
-    addr.sll_addr[2]  = 0xff;
-    addr.sll_addr[3]  = 0xff;
-    addr.sll_addr[4]  = 0xff;
-    addr.sll_addr[5]  = 0xff;
-
-    unsigned char en_payload[16];
-    for (int i = 0; i < sizeof(en_payload); ++i) {
-        en_payload[i] = 'X';
-    }
-
-    /* 5. Send the Ethernet frame. */
-    if (sendto(sockfd, en_payload, sizeof(en_payload), 0, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
-        warn("sendto");
-        return -1;
-    }
-
-    return 0;
-}
-
 int usage(void)
 {
     char msg[] = "Usage: send_pause if_name";
