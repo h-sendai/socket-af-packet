@@ -101,3 +101,8 @@ listening on exp0, link-type EN10MB (Ethernet), capture size 262144 bytes
         0x0010:  0800 0604 0002 0010 1835 9aef c0a8 01cd  .........5......
         0x0020:  0400 0000 0000 c0a8 01c9                 ..........
 ```
+
+## ARPテーブルの状態
+
+このARPプログラムを起動して、正しくARP replyが返ってきたとしてもそれは
+OSのARPテーブルに入ることはない。
