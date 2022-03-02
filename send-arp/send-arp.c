@@ -64,6 +64,15 @@ int main(int argc, char *argv[])
     addr.sll_protocol= htons(ETH_P_ARP);
     memcpy(addr.sll_addr,ether_broadcast_addr,ETHER_ADDR_LEN);
 
+    /*
+     * need bind() to recv() at the bottom of this program
+     * not to recv() the ARPs from the other network interfaces.
+     * If we do sendto() only, does not need this bind().
+     */
+    if (bind(sockfd, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+        err(1, "bind");
+    }
+
     /* Prepare ARP request structure */
     struct ether_arp req;
 
@@ -107,6 +116,7 @@ int main(int argc, char *argv[])
     printf("sendto return value: %d\n", n); 
 
     unsigned char reply_buf[1500];
+    /* if there is no ARP reply, program will block here */
     n = recv(sockfd, reply_buf, sizeof(reply_buf), 0);
     printf("recv return value: %d\n", n);
 
