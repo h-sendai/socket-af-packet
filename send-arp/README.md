@@ -23,6 +23,35 @@ ARP requestの両方に含まれることになる。
 - ARP requestはtarget hardware address以外の全ての
 フィールドを埋めて送ることになる。
 
+## 構造体
+
+<net/if_arp.h>
+```
+struct arphdr {
+    unsigned short int ar_hrd;          /* Format of hardware address. */
+    unsigned short int ar_pro;          /* Format of protocol address. */
+    unsigned char ar_hln;               /* Length of hardware address. */
+    unsigned char ar_pln;               /* Length of protocol address. */
+    unsigned short int ar_op;           /* ARP opcode (command).       */
+};
+```
+
+<netinet/if_ether.h>
+```
+struct  ether_arp {
+    struct  arphdr ea_hdr;      /* fixed-size header       */
+    uint8_t arp_sha[ETH_ALEN];  /* sender hardware address */
+    uint8_t arp_spa[4];         /* sender protocol address */
+    uint8_t arp_tha[ETH_ALEN];  /* target hardware address */
+    uint8_t arp_tpa[4];         /* target protocol address */
+};
+#define arp_hrd ea_hdr.ar_hrd
+#define arp_pro ea_hdr.ar_pro
+#define arp_hln ea_hdr.ar_hln
+#define arp_pln ea_hdr.ar_pln
+#define arp_op  ea_hdr.ar_op
+```
+
 ## ARP request送信、ARP reply受信側でのtcpdump
 
 Ethernetペイロードの最小値は46バイト。
