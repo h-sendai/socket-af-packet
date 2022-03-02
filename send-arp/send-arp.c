@@ -68,6 +68,12 @@ int main(int argc, char *argv[])
      * need bind() to recv() at the bottom of this program
      * not to recv() the ARPs from the other network interfaces.
      * If we do sendto() only, does not need this bind().
+     * 
+     * from packet(7):
+     * By default, all packets of the specified protocol type are passed to a packet
+     * socket.  To get packets only from a specific interface use bind(2) specifying an
+     * address in a struct sockaddr_ll to bind the packet socket to an interface.  Fields
+     * used for binding are sll_family (should be AF_PACKET), sll_protocol, and sll_ifindex.
      */
     if (bind(sockfd, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
         err(1, "bind");
