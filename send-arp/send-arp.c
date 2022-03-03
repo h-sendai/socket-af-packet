@@ -24,6 +24,42 @@
 
 #include "fill_address.h"
 
+int decode_arp_reply(unsigned char *buf, int len)
+{
+    /* reply_buf may contain Ethernet padding */
+    struct sockaddr_in sa_sender, sa_target;
+    memset(&sa_sender, 0, sizeof(sa_sender));
+    memset(&sa_target, 0, sizeof(sa_target));
+
+    struct ether_arp arp_reply;
+    memcpy(&arp_reply, buf, sizeof(arp_reply));
+    
+    if (arp_reply.arp_op != htons(0x0002)) {
+        fprintf(stderr, "not an ARP reply packet: op: %04x\n", htons(arp_reply.arp_op));
+        return -1;
+    }
+
+    printf("ARP reply decode\n");
+    sa_sender.sin_addr.s_addr = *(uint32_t *)arp_reply.arp_spa;
+    sa_target.sin_addr.s_addr = *(uint32_t *)arp_reply.arp_tpa;
+    printf("sender protocol address: %s\n", inet_ntoa(sa_sender.sin_addr));
+    printf("target protocol address: %s\n", inet_ntoa(sa_target.sin_addr));
+
+    struct ether_addr sender_hardware_addr;
+    struct ether_addr target_hardware_addr;
+   
+    for (int i = 0; i < 6; ++i) {
+        sender_hardware_addr.ether_addr_octet[i] = arp_reply.arp_sha[i];
+    }
+    for (int i = 0; i < 6; ++i) {
+        target_hardware_addr.ether_addr_octet[i] = arp_reply.arp_tha[i];
+    }
+    printf("sender hardware address: %s\n", ether_ntoa(&sender_hardware_addr));
+    printf("target hardware address: %s\n", ether_ntoa(&target_hardware_addr));
+
+    return 0;
+}
+
 int main(int argc, char *argv[])
 {
     if (argc != 3) {
@@ -113,7 +149,6 @@ int main(int argc, char *argv[])
     /* Prepare ARP request structure DONE */
 
     /* Send the frame (using sendto) */
-
     int n;
     n = sendto(sockfd, &req, sizeof(req), 0, (struct sockaddr*)&addr, sizeof(addr));
     if (n < 0) {
@@ -126,6 +161,9 @@ int main(int argc, char *argv[])
     n = recv(sockfd, reply_buf, sizeof(reply_buf), 0);
     printf("recv return value: %d\n", n);
 
+    decode_arp_reply(reply_buf, n);
+
+#if 0
     for (int i = 0; i < n; ++i) {
         if (i % 8 != 0) {
             printf(" ");
@@ -136,6 +174,7 @@ int main(int argc, char *argv[])
         }
     }
     printf("\n");
+#endif
 
     return 0;
 }
