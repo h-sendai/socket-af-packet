@@ -20,6 +20,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "timespecop.h"
+
 int do_socket()
 {
     int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -27,22 +29,28 @@ int do_socket()
         err(1, "socket");
     }
 
-    struct timeval tv0, tv1, diff;
-    gettimeofday(&tv0, NULL);
+    struct timespec ts0, ts1, diff;
+    clock_gettime(CLOCK_MONOTONIC, &ts0);
     int n = close(sockfd);
-    gettimeofday(&tv1, NULL);
+    clock_gettime(CLOCK_MONOTONIC, &ts1);
     if (n < 0) {
         err(1, "close");
     }
-    timersub(&tv1, &tv0, &diff);
-    printf("close: %ld usec\n", 1000000*diff.tv_sec + diff.tv_usec);
+    timespecsub(&ts1, &ts0, &diff);
+    printf("close: %ld nsec\n", 1000000000*diff.tv_sec + diff.tv_nsec);
 
     return 0;
 }
 
 int main(int argc, char *argv[])
 {
-    for (int i = 0; i < 1000; ++i) {
+    if (argc != 2) {
+        fprintf(stderr, "Usage: ./close-sock-dgram n_data\n");
+        exit(1);
+    }
+
+    int n_data = strtol(argv[1], NULL, 0);
+    for (int i = 0; i < n_data; ++i) {
         do_socket();
     }
 

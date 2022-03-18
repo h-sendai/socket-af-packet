@@ -20,22 +20,24 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "timespecop.h"
+
 int do_socket()
 {
-    int sockfd = socket(AF_PACKET, SOCK_DGRAM, htons(ETH_P_PAUSE));
+    int sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd < 0) {
         err(1, "socket");
     }
 
-    struct timeval tv0, tv1, diff;
-    gettimeofday(&tv0, NULL);
+    struct timespec ts0, ts1, diff;
+    clock_gettime(CLOCK_MONOTONIC, &ts0);
     int n = close(sockfd);
-    gettimeofday(&tv1, NULL);
+    clock_gettime(CLOCK_MONOTONIC, &ts1);
     if (n < 0) {
         err(1, "close");
     }
-    timersub(&tv1, &tv0, &diff);
-    printf("close: %ld usec\n", 1000000*diff.tv_sec + diff.tv_usec);
+    timespecsub(&ts1, &ts0, &diff);
+    printf("close: %ld nsec\n", 1000000000*diff.tv_sec + diff.tv_nsec);
 
     return 0;
 }
@@ -43,7 +45,7 @@ int do_socket()
 int main(int argc, char *argv[])
 {
     if (argc != 2) {
-        fprintf(stderr, "Usage: close-af-packet n_data\n");
+        fprintf(stderr, "Usage: ./close-sock-stream n_data\n");
         exit(1);
     }
 
