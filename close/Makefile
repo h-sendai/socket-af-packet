@@ -1,5 +1,6 @@
 SUBDIRS += close-af-packet
 SUBDIRS += close-sock-dgram
+SUBDIRS += close-sock-stream
 
 .PHONY: $(SUBDIRS)
 
