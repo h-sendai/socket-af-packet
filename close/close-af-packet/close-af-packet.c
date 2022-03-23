@@ -49,6 +49,7 @@ int main(int argc, char *argv[])
 
     int n_data = strtol(argv[1], NULL, 0);
     for (int i = 0; i < n_data; ++i) {
+        fprintf(stderr, "%d\n", i);
         do_socket();
     }
 
