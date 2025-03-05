@@ -106,3 +106,24 @@ listening on exp0, link-type EN10MB (Ethernet), capture size 262144 bytes
 
 このARPプログラムを起動して、正しくARP replyが返ってきたとしてもそれは
 OSのARPテーブルに入ることはない。
+
+## ふつうのコマンド
+
+ARPを送るコマンドとしてarpingがある。
+AlmaLinux9ではiputils-20210202-10パッケージとして入っている。
+pingのように使える。
+
+```
+% arping -c 1 remotehost
+ARPING 192.168.100.200 from 192.168.100.1 eno2
+Unicast reply from 192.168.100.200 [02:01:00:AB:CD:EF]  0.696ms
+Sent 1 probes (1 broadcast(s))
+Received 1 response(s)
+```
+
+capabilityが以下のとおりcap_net_raw=pで設定されている。
+
+```
+% sudo getcap /usr/bin/arping
+/usr/bin/arping cap_net_raw=p
+```
